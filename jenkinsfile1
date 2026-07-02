@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                // Stage 1: Git clone
+                git url: 'https://github.com/amitopenwriteup/javadocker.git', branch: 'main'
+            }
+        }
+
+        stage('Build Package') {
+            steps {
+                // Stage 2: Maven build
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Archive Artifact') {
+            steps {
+                // Stage 3: Archive JAR file
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Build completed successfully!'
+        }
+        failure {
+            echo '❌ Build failed. Please check logs.'
+        }
+        always {
+            echo 'ℹ️ Pipeline execution finished.'
+        }
+    }
+}
+
