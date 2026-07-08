@@ -1,23 +1,28 @@
 pipeline {
-agent any
-stages {
-  stage('Checkout') {
-    steps {
-// Checkout code from the Git repository
-     sh 'echo checking out'
-   }
-  }
-stage('Build') {
-  steps {
-// Build the Java application (replace with your build commands)
-  sh 'javac -version'
- }
+    agent any
+
+    stages {
+        stage('Clone') {
+            steps {
+                git branch: 'main', url: '<your-git-server-url>'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    sh 'docker build -t localhost:5000/python-demo:v1 .'
+                }
+            }
+        }
+
+        stage('Push') {
+            steps {
+                script {
+                    sh 'docker push localhost:5000/python-demo:v1'
+                }
+            }
+        }
+    }
 }
-stage('Deploy') {
-  steps {
-  // Deploy the application (replace with your deployment commands)
-   sh 'echo "Deploying the application"'
-   }
-  }
- }
-}
+
